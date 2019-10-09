@@ -1,9 +1,9 @@
 class telegraf::plugin::net (
-  $interfaces = [],
+  Array [String] $interfaces = [],
 ) {
   telegraf::plugin { '[inputs.net]':
     conf => {
-      'interfaces' => any2array($interfaces),
+      'interfaces' => $interfaces,
     }
   }
 }
