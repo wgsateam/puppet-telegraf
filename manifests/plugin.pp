@@ -1,7 +1,7 @@
 define telegraf::plugin (
-  $order      = '10',
-  $conf       = undef,
-  $plugin_name  = undef,
+  Variant[String, Integer]  $order      = 10,
+  Optional[Hash]            $conf       = undef,
+  Optional[String]          $plugin_name  = undef, 
 ) {
   include telegraf::params
 

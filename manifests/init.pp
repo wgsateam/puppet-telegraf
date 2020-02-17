@@ -25,7 +25,7 @@ class telegraf(
     notify  => Service[$service_name],
   }
   concat::fragment { 'telegraf_header':
-    order   => '00',
+    order   => 0,
     content => "## Managed by Puppet ###\n",
     target  => $conf_path,
   }
@@ -39,12 +39,12 @@ class telegraf(
   }
 
   telegraf::plugin { 'global_tags':
-    order => '04',
+    order => 4,
     conf  => $tags,
   }
 
   telegraf::plugin { 'agent':
-    order => '01',
+    order => 1,
     conf  => {
       'interval'  => $interval,
       'utc'       => true,
