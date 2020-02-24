@@ -1,6 +1,6 @@
 [<%= @real_name %>]
 <% if @conf -%>
-    <%- @conf.keys.select { |k| not @conf[k].is_a?(Hash) }.sort_by { |k| k.tr("[]", "") }.each do |q| -%>
+  <%- @conf.keys.select { |k| not @conf[k].is_a?(Hash) }.reject { |k| scope.function_dump_var([@conf[k]]) == 'undef' }.sort_by { |k| k.tr("[]", "") }.each do |q| -%>
     <%- v=@conf[q] -%>
     <%= q %> = <%= scope.function_dump_var([v]) %>
     <%- end -%>
@@ -10,6 +10,6 @@
     <%= q %>
     <%- v.keys.sort_by { |k| k.tr("[]", "") }.each do |inner_v| -%>
     <%= inner_v %> = <%= scope.function_dump_var([v[inner_v]]) %>
-    <%- end -%>
+  <%- end -%>
 <% end %>
 <% end %>
