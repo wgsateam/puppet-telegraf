@@ -24,6 +24,8 @@ define telegraf::outputs::amqp (
       order       => 3,
       conf        => {
         'brokers'              => ["amqp://${amqp_hub}:${amqp_port}/${amqp_vhost}"],
+        'username'             => $amqp_user,
+        'password'             => $amqp_pass,
         'headers'              => "{\"database\" = \"${database}\", \"retention_policy\" = \"${retention_policy}\"}",
         'exchange'             => $exchange,
         'routing_tag'          => $routing_tag,
