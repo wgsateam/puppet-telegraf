@@ -12,7 +12,10 @@ class { 'telegraf':
   }
 }
 class { 'telegraf::outputs::amqp':
-  url         => 'amqp://sample_user:sample_password@sample_mq_host:5672/sample_vhost',
+  amqp_user   => 'user',
+  amqp_pass   => 'pass',
+  amqp_hub    => 'hostname',
+  amqp_vhost  => 'vhost'
   exchange    => 'telegraf',
   routing_tag => 'dc',
 }
