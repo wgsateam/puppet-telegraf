@@ -3,7 +3,6 @@ define telegraf::plugin (
   Optional[Hash]            $conf       = undef,
   Optional[String]          $plugin_name  = undef, 
 ) {
-  include telegraf::params
 
   if $plugin_name {
     $real_name = $plugin_name
@@ -12,10 +11,8 @@ define telegraf::plugin (
   }
   $plugin_file = regsubst($title, '\[|\]', '', 'G')
 
-  concat::fragment { $plugin_file:
-    target  => $telegraf::params::conf_path,
+  file { "/etc/telegraf/telegraf.d/${order}-${plugin_file}":
+    ensure  => file,
     content => template('telegraf/fragment.erb'),
-    order   => $order,
   }
-
 }

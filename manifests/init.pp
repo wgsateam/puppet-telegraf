@@ -14,32 +14,29 @@ class telegraf(
     ensure => $version,
     name   => $package_name,
     *      => $package_options
-  } ~>
-  concat { $conf_path:
-    ensure  => present,
-    owner   => 'telegraf',
+  }
+  file { $conf_path:
+    ensure  => absent,
+  }
+  file { '/etc/telegraf/telegraf.d':
+    ensure  => directory,
     group   => 'telegraf',
-    mode    => '0644',
-    before  => Service[$service_name],
-    require => Package[$package_name],
-    notify  => Service[$service_name],
+    mode    => '0775',
+    recurse => true,
+    purge   => true,
   }
-  concat::fragment { 'telegraf_header':
-    order   => 0,
-    content => "## Managed by Puppet ###\n",
-    target  => $conf_path,
-  }
+
   if $manage_service {
     service { $service_name:
       ensure  => running,
       enable  => true,
       name    => $service_name,
-      require => [Package[$package_name], Concat[$conf_path], ],
+      require => Package[$package_name],
     }
   }
 
   telegraf::plugin { 'global_tags':
-    order => 4,
+    order => 90,
     conf  => $tags,
   }
 
