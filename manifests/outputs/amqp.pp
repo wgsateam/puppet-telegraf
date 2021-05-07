@@ -21,7 +21,7 @@ define telegraf::outputs::amqp (
 
     telegraf::plugin { "[outputs.amqp.${title}]":
       plugin_name => '[outputs.amqp]',
-      order       => 3,
+      order       => '03',
       conf        => {
         'brokers'              => ["amqp://${amqp_hub}:${amqp_port}/${amqp_vhost}"],
         'username'             => $amqp_user,
@@ -41,7 +41,7 @@ define telegraf::outputs::amqp (
   } else {
     telegraf::plugin { "[outputs.amqp.${title}]":
       plugin_name => '[outputs.amqp]',
-      order       => 3,
+      order       => '03',
       conf        => {
         'url'                  => "amqp://${amqp_user}:${amqp_pass}@${amqp_hub}:${amqp_port}/${amqp_vhost}",
         'exchange'             => $exchange,

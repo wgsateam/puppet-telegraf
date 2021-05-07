@@ -36,12 +36,12 @@ class telegraf(
   }
 
   telegraf::plugin { 'global_tags':
-    order => 90,
+    order => '90',
     conf  => $tags,
   }
 
   telegraf::plugin { 'agent':
-    order => 1,
+    order => '01',
     conf  => {
       'interval'  => $interval,
       'utc'       => true,
