@@ -1,5 +1,6 @@
 class telegraf(
   Boolean              $manage_service = true,
+  Boolean              $manage_config_dir = true,
                        $version = 'installed',
                        $telegraf_hostname = $::hostname,
   String               $package_name = 'telegraf',
@@ -18,12 +19,13 @@ class telegraf(
   file { $conf_path:
     ensure  => file,
   }
-  file { '/etc/telegraf/telegraf.d':
-    ensure => directory,
-    group  => 'telegraf',
-    mode   => '0775',
+  if $manage_config_dir {
+    file { '/etc/telegraf/telegraf.d':
+      ensure => directory,
+      group  => 'telegraf',
+      mode   => '0775',
+    }
   }
-
   if $manage_service {
     service { $service_name:
       ensure  => running,
