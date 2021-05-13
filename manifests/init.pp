@@ -16,14 +16,12 @@ class telegraf(
     *      => $package_options
   }
   file { $conf_path:
-    ensure  => absent,
+    ensure  => file,
   }
   file { '/etc/telegraf/telegraf.d':
-    ensure  => directory,
-    group   => 'telegraf',
-    mode    => '0775',
-    recurse => true,
-    purge   => true,
+    ensure => directory,
+    group  => 'telegraf',
+    mode   => '0775',
   }
 
   if $manage_service {
@@ -36,12 +34,12 @@ class telegraf(
   }
 
   telegraf::plugin { 'global_tags':
-    order => '90',
+    order => '01',
     conf  => $tags,
   }
 
   telegraf::plugin { 'agent':
-    order => '01',
+    order => '00',
     conf  => {
       'interval'  => $interval,
       'utc'       => true,
