@@ -14,5 +14,6 @@ define telegraf::plugin (
   file { "/etc/telegraf/telegraf.d/${order}-${plugin_file}.conf":
     ensure  => file,
     content => template('telegraf/fragment.erb'),
+    notify  => Service[$telegraf::service_name]
   }
 }

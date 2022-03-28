@@ -34,6 +34,7 @@ class telegraf(
       ensure  => running,
       enable  => true,
       name    => $service_name,
+      restart =>  "service ${service_name} reload",
       require => Package[$package_name],
     }
   }
