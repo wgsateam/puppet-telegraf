@@ -49,7 +49,7 @@ class telegraf(
     conf  => {
       'interval'  => $interval,
       'utc'       => true,
-      'precision' => 'n',
+      'precision' => '1ns',
       'debug'     => false,
       'hostname'  => $telegraf_hostname,
     }

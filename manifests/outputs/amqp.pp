@@ -9,7 +9,7 @@ define telegraf::outputs::amqp (
   $ssl_ca               = '',
   $ssl_cert             = '',
   $ssl_key              = '',
-  $precision            = 'n',
+  $precision            = '1ns',
   $retention_policy     = 'default',
   $database             = 'telegraf',
   $namepass             = [],
