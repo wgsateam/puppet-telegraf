@@ -3,7 +3,7 @@ define telegraf::outputs (
 ) {
   $plugin_name = split($title, '[.]')[0]
   telegraf::plugin { "[outputs.${title}]":
-    plugin_name => "[outputs.${plugin_name}]",    
-    conf        => $conf 
+    plugin_name => "[outputs.${plugin_name}]",
+    conf        => $conf
   }
 }

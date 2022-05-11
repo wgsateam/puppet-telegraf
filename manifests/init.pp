@@ -1,17 +1,18 @@
 class telegraf(
-  Boolean              $manage_service = true,
+  Boolean              $manage_service    = true,
   Boolean              $manage_config_dir = true,
-  Boolean              $manage_config = true,
-                       $version = 'installed',
+  Boolean              $manage_config     = true,
+                       $version           = 'installed',
                        $telegraf_hostname = $::hostname,
-  String               $package_name = 'telegraf',
-  Hash                 $package_options = {},
-  String               $service_name = 'telegraf',
-  Stdlib::Absolutepath $conf_path = $telegraf::params::conf_path,
-  Array[String]        $plugins = ['mem', 'cpu', 'disk', 'swap', 'system', 'io', 'net'],
-                       $tags = undef,
-                       $interval = '10s',
+  String               $package_name      = 'telegraf',
+  Hash                 $package_options   = {},
+  String               $service_name      = 'telegraf',
+  Stdlib::Absolutepath $conf_path         = $telegraf::params::conf_path,
+  Array[String]        $plugins           = ['mem', 'cpu', 'disk', 'swap', 'system', 'io', 'net'],
+                       $tags              = undef,
+                       $interval          = '10s',
 ) inherits telegraf::params {
+
   package { $package_name:
     ensure => $version,
     name   => $package_name,
@@ -31,11 +32,11 @@ class telegraf(
   }
   if $manage_service {
     service { $service_name:
-      ensure  => running,
-      enable  => true,
-      name    => $service_name,
-      restart =>  "service ${service_name} reload",
-      require => Package[$package_name],
+      ensure    => running,
+      enable    => true,
+      name      => $service_name,
+      require   => Package[$package_name],
+      subscribe => Package[$package_name],
     }
   }
 
@@ -57,4 +58,5 @@ class telegraf(
   $plugins.each |$plugin| {
     include "telegraf::plugin::${plugin}"
   }
+
 }
