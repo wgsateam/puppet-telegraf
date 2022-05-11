@@ -10,13 +10,7 @@ define telegraf::plugin (
   file { "/etc/telegraf/telegraf.d/${order}-${plugin_file}.conf":
     ensure  => file,
     content => template('telegraf/fragment.erb'),
-  }
-  if $telegraf::manage_service {
-    service { "plugin_${telegraf::service_name}_reload":
-      name      => $telegraf::service_name,
-      restart   => "service ${telegraf::service_name} reload",
-      subscribe => File["/etc/telegraf/telegraf.d/${order}-${plugin_file}.conf"],
-    }
+    notify  => Service[$telegraf::service_name],
   }
 
 }
