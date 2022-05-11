@@ -9,7 +9,6 @@ define telegraf::outputs::amqp (
   $ssl_ca               = '',
   $ssl_cert             = '',
   $ssl_key              = '',
-  $precision            = '1ns',
   $retention_policy     = 'default',
   $database             = 'telegraf',
   $namepass             = [],
@@ -17,8 +16,27 @@ define telegraf::outputs::amqp (
   $insecure_skip_verify = false,
 ) {
 
-  if $facts['os']['name'] == 'CentOS' and $facts['os']['release']['major'] == '7' {
+  if $facts['os']['name'] == 'CentOS' and $facts['os']['release']['major'] == '5' {
 
+    telegraf::plugin { "[outputs.amqp.${title}]":
+      plugin_name => '[outputs.amqp]',
+      order       => '03',
+      conf        => {
+        'url'                  => "amqp://${amqp_user}:${amqp_pass}@${amqp_hub}:${amqp_port}/${amqp_vhost}",
+        'exchange'             => $exchange,
+        'routing_tag'          => $routing_tag,
+        'ssl_ca'               => $ssl_ca,
+        'ssl_cert'             => $ssl_cert,
+        'ssl_key'              => $ssl_key,
+        'precision'            => '1ns',
+        'retention_policy'     => $retention_policy,
+        'database'             => $database,
+        'namepass'             => $namepass,
+        'namedrop'             => $namedrop,
+        'insecure_skip_verify' => $insecure_skip_verify,
+      }
+    }
+  } else {
     telegraf::plugin { "[outputs.amqp.${title}]":
       plugin_name => '[outputs.amqp]',
       order       => '03',
@@ -32,26 +50,6 @@ define telegraf::outputs::amqp (
         'ssl_ca'               => $ssl_ca,
         'ssl_cert'             => $ssl_cert,
         'ssl_key'              => $ssl_key,
-        'precision'            => $precision,
-        'namepass'             => $namepass,
-        'namedrop'             => $namedrop,
-        'insecure_skip_verify' => $insecure_skip_verify,
-      }
-    }
-  } else {
-    telegraf::plugin { "[outputs.amqp.${title}]":
-      plugin_name => '[outputs.amqp]',
-      order       => '03',
-      conf        => {
-        'url'                  => "amqp://${amqp_user}:${amqp_pass}@${amqp_hub}:${amqp_port}/${amqp_vhost}",
-        'exchange'             => $exchange,
-        'routing_tag'          => $routing_tag,
-        'ssl_ca'               => $ssl_ca,
-        'ssl_cert'             => $ssl_cert,
-        'ssl_key'              => $ssl_key,
-        'precision'            => $precision,
-        'retention_policy'     => $retention_policy,
-        'database'             => $database,
         'namepass'             => $namepass,
         'namedrop'             => $namedrop,
         'insecure_skip_verify' => $insecure_skip_verify,
