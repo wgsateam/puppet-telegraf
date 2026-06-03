@@ -1,5 +1,7 @@
 <%-
 def dumpvar(var)
+  var = var.unwrap if var.respond_to?(:unwrap) # unwrap Sensitive values
+
   case var
     when String
       if var =~ /^\{/

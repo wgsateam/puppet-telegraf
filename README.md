@@ -58,3 +58,22 @@ telegraf::plugin { '[inputs.logparser.nginx_access_log]':
   }
 }
 ```
+
+Sensitive values example:
+
+When a plugin config contains a secret (e.g. a DSN with a password), set
+`sensitive => true` and wrap the secret value in `Sensitive(...)`. The plaintext
+is still written to the telegraf config file (telegraf needs it), but the
+rendered file content is wrapped in `Sensitive`, so the secret does not leak
+into the catalog, reports or run diffs.
+
+```puppet
+telegraf::plugin { '[inputs.mysql.db]':
+  plugin_name => '[inputs.mysql]',
+  sensitive   => true,
+  conf        => {
+    'metric_version' => 2,
+    'servers'        => [Sensitive("telegraf:${password}@tcp(127.0.0.1:3306)/")],
+  },
+}
+```
