@@ -1,6 +1,24 @@
-### Puppet module to install and configure telegraf --- an OSS influxdb client
+# telegraf
 
-Supports telegraf 0.1.9+
+Puppet module to install and configure Telegraf.
+
+## Compatibility
+
+This module requires Puppet or OpenVox `>= 7.34.0 < 9.0.0`.
+
+The module metadata declares support for:
+
+- CentOS 7
+- OracleLinux 7, 8, 9
+- RedHat 7, 8, 9
+- Debian 10, 11, 12, 13
+- Ubuntu 20.04, 22.04, 24.04, 26.04
+
+## Dependencies
+
+- `puppetlabs-stdlib >= 8.6.0 < 9.0.0`
+
+## Usage
 
 Example:
 
@@ -11,13 +29,13 @@ class { 'telegraf':
     # some other tags if you like...
   }
 }
-class { 'telegraf::outputs::amqp':
-  amqp_user   => 'user',
-  amqp_pass   => 'pass',
-  amqp_hub    => 'hostname',
-  amqp_vhost  => 'vhost'
-  exchange    => 'telegraf',
-  routing_tag => 'dc',
+
+telegraf::outputs { 'amqp':
+  conf => {
+    'url'         => 'amqp://user:pass@hostname/vhost',
+    'exchange'    => 'telegraf',
+    'routing_tag' => 'dc',
+  },
 }
 ```
 

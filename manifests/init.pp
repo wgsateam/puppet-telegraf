@@ -1,22 +1,35 @@
-class telegraf(
+# @summary Install and configure Telegraf.
+#
+# @param manage_service Manage the Telegraf service.
+# @param manage_config_dir Manage the Telegraf config directory.
+# @param manage_config Manage the main Telegraf config file.
+# @param version Package ensure value for Telegraf.
+# @param telegraf_hostname Hostname rendered into the agent config.
+# @param package_name Telegraf package name.
+# @param package_options Extra package resource attributes.
+# @param service_name Telegraf service name.
+# @param conf_path Main Telegraf config path.
+# @param plugins Built-in input plugin classes to include.
+# @param tags Global tags rendered into Telegraf config.
+# @param interval Telegraf agent interval.
+class telegraf (
   Boolean              $manage_service    = true,
   Boolean              $manage_config_dir = true,
   Boolean              $manage_config     = true,
-                       $version           = 'installed',
-                       $telegraf_hostname = $::hostname,
+  String               $version           = 'installed',
+  String               $telegraf_hostname = $facts['networking']['hostname'],
   String               $package_name      = 'telegraf',
   Hash                 $package_options   = {},
   String               $service_name      = 'telegraf',
   Stdlib::Absolutepath $conf_path         = $telegraf::params::conf_path,
   Array[String]        $plugins           = ['mem', 'cpu', 'disk', 'swap', 'system', 'io', 'net'],
-                       $tags              = undef,
-                       $interval          = '10s',
+  Optional[Hash]       $tags              = undef,
+  String               $interval          = '10s',
 ) inherits telegraf::params {
-
   package { $package_name:
     ensure => $version,
     name   => $package_name,
-    *      => $package_options
+    *      => $package_options,
   }
   if $manage_config {
     file { $conf_path:
@@ -53,10 +66,9 @@ class telegraf(
       'precision' => '1ns',
       'debug'     => false,
       'hostname'  => $telegraf_hostname,
-    }
+    },
   }
   $plugins.each |$plugin| {
     include "telegraf::plugin::${plugin}"
   }
-
 }
