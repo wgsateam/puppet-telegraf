@@ -22,7 +22,7 @@ class telegraf (
   Hash                 $package_options   = {},
   String               $service_name      = 'telegraf',
   Stdlib::Absolutepath $conf_path         = $telegraf::params::conf_path,
-  Array[String]        $plugins           = ['mem', 'cpu', 'disk', 'swap', 'system', 'io', 'net'],
+  Array[String]        $plugins           = ['mem', 'cpu', 'disk', 'swap', 'system', 'net'],
   Optional[Hash]       $tags              = undef,
   String               $interval          = '10s',
 ) inherits telegraf::params {
@@ -61,11 +61,13 @@ class telegraf (
   telegraf::plugin { 'agent':
     order => '00',
     conf  => {
-      'interval'  => $interval,
-      'utc'       => true,
-      'precision' => '1ns',
-      'debug'     => false,
-      'hostname'  => $telegraf_hostname,
+      'interval'                          => $interval,
+      'precision'                         => '1ns',
+      'debug'                             => false,
+      'hostname'                          => $telegraf_hostname,
+      # Run processors only before aggregators. Telegraf 1.41 makes this the
+      # default; setting it explicitly also silences the startup warning.
+      'skip_processors_after_aggregators' => true,
     },
   }
   $plugins.each |$plugin| {

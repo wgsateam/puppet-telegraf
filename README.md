@@ -16,7 +16,7 @@ The module metadata declares support for:
 
 ## Dependencies
 
-- `puppetlabs-stdlib >= 8.6.0 < 9.0.0`
+- `puppetlabs-stdlib >= 9.0.0 < 10.0.0`
 
 ## Usage
 
@@ -29,51 +29,53 @@ class { 'telegraf':
     # some other tags if you like...
   }
 }
+```
 
-telegraf::outputs { 'amqp':
-  conf => {
-    'url'         => 'amqp://user:pass@hostname/vhost',
-    'exchange'    => 'telegraf',
-    'routing_tag' => 'dc',
+Every plugin, including outputs, is a `telegraf::plugin` resource. The title
+names the file in `/etc/telegraf/telegraf.d` (`<order>-<title>.conf`), and
+`plugin_name` sets the TOML table. Use distinct titles to run several
+instances of the same plugin.
+
+Output example:
+
+```puppet
+telegraf::plugin { 'prometheus_client':
+  plugin_name => '[outputs.prometheus_client]',
+  conf        => {
+    'listen'   => ':9273',
+    'path'     => '/metrics',
+    'namepass' => ['prometheus*'],
   },
 }
 ```
 
-Custom output example:
+Custom metrics example (nginx access log parsed with grok):
 
 ```puppet
-telegraf::outputs { "prometheus_client.${dc}":
-  conf => {
-    'listen'   => ":${port}",
-    'path'     => $path,
-    'namepass' => $namepass
-  }
-}
-
-telegraf::outputs { "prometheus_client.${dc2}":
-  conf => {
-    'listen'   => ":${port}",
-    'path'     => $path,
-    'namepass' => $namepass
-  }
+telegraf::plugin { '[inputs.tail.nginx_access_log]':
+  plugin_name => '[inputs.tail]',
+  order       => '05',
+  conf        => {
+    'files'         => ['/var/log/nginx/access.log'],
+    'data_format'   => 'grok',
+    'grok_patterns' => ['%{COMBINED_LOG_FORMAT}'],
+    'name_override' => 'nginx_access_log',
+  },
 }
 ```
 
-Custom metrics example:
+Sub-tables such as tags are passed as hash keys with the full table name:
 
 ```puppet
-telegraf::plugin { '[inputs.logparser.nginx_access_log]':
-  plugin_name => '[inputs.logparser]',
-  order       => '05',
+telegraf::plugin { '[inputs.exec.my_check]':
+  plugin_name => '[inputs.exec]',
   conf        => {
-    'files'                   => ['/var/log/nginx/access.log'],
-    'from_beginning'          => false,
-    '[inputs.logparser.grok]' => {
-      'patterns'        => ['%{RT_CACHE_LOG_FORMAT}'],
-      'custom_patterns' => 'RT_CACHE_LOG_FORMAT %{IP:client_ip} %{NOTSPACE:ident} %{NOTSPACE:upstream_cache_status} \[%{HTTPDATE:timestamp}\]  "(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})" %{NUMBER:resp_code:tag} (?:%{NUMBER:resp_bytes:int}|-) %{QS:referrer} %{QS:agent} %{QS:request_time} %{QS:upstream_response_time} %{QS:upstream_addr}',
-      'measurement'     => 'nginx_access_log'
-    }
-  }
+    'commands'           => ['/usr/local/bin/my_check'],
+    'data_format'        => 'influx',
+    '[inputs.exec.tags]' => {
+      'team' => 'wgsa',
+    },
+  },
 }
 ```
 
